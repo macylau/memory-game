@@ -7,7 +7,7 @@
 	let size = 20
 	let grid = createGrid()
 	let maxMatches = grid.length / 2
-	let seleted: number[] = []
+	let selected: number[] = []
 	let matches: string[] = []
 
 	function createGrid() {
@@ -25,7 +25,32 @@
 	function shuffle<Items>(array: Items[]) {
 		return array.sort(() => Math.random() - 0.5)
 	}
-	console.log(grid)
+	
+	function selectedCard(cardIndex: number) {
+		selected = selected.concat(cardIndex)
+	}
+		
+	function matchCards() {
+		const [first, second] = selected
+
+		if (grid[first] == grid[second]) {
+			matches = matches.concat(grid[first])
+		}
+
+		setTimeout(() => selected = [], 300)
+		selected = []
+	}
+
+	function gameWon() {
+		state ='won'
+	}
+
+	$: selected.length == 2 && matchCards ()
+
+	$: maxMatches == matches.length && gameWon()
+
+	$: console.log({ state, selected, matches})
+	
 </script>
 
 <h1 class="text-3xl text-center mt-14">Memory Game</h1>
@@ -34,10 +59,23 @@
 {/if}
 
 {#if state == 'playing'}
-	<div class="max-w-md mx-auto cards grid grid-cols-5 gap-4 justify-items-center m-auto overflow-hidden md:max-w-3xl p-8">
+<div class="matches flex justify-start gap-4 max-w-md mx-auto text-4xl">
+	{#each matches as card}
+	<div>{card}</div>
+	{/each}
+</div>
+	<div class="cards max-w-md mx-auto grid grid-cols-5 gap-4 justify-items-center overflow-hidden md:max-w-3xl p-8">
 		{#each grid as card, cardIndex}
-			<button class="card drop-shadow-lg w-32 h-32 rounded-lg focus:border-4 border-pink-400">
-				<div class="text-6xl">{card}</div>
+			{@const isSelected = selected.includes(cardIndex)}
+			{@const isSelectedOrMatched = selected.includes(cardIndex) || matches.includes(card)}
+			{@const match = matches.includes(card)}
+
+			<button 
+			class="card" 
+			class:selected={isSelected} 
+			disabled={isSelectedOrMatched}
+			on:click={() => selectedCard(cardIndex)} >
+				<div class:match>{card}</div>
 			</button>
 		{/each}
 	</div>
@@ -53,3 +91,19 @@
 	<button on:click={() => state = 'playing'}>Play again</button>
 {/if}
 
+<style>
+	.card {
+		width: 128px;
+		height: 128px;
+		border-radius: 0.5rem;
+		filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+		font-size: 60px;
+		&.selected {
+			border: 4px solid #ff62cd;
+		}
+		& .match {
+			transition: opacity 0.3s ease-out;
+			opacity: 0.4;
+		}
+	}
+</style>
