@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { emoji } from './emoji'
+	import { onMount } from 'svelte'
 
 	type State = 'start' | 'playing' | 'paused' | 'won' | 'lost'
 
@@ -11,6 +12,8 @@
 	let matches: string[] = []
 	let timerId: any | null = null
 	let time = 60
+	let backgroundMusic : HTMLAudioElement | null = null
+	let musicLoaded = false;
 
 	function createGrid() {
 		let cards = new Set<string>()
@@ -84,17 +87,57 @@
 		resetGame()
 	}
 
-	$: if (state === 'playing') {
-		!timerId && startGameTimer()
-	}
+	function playAudioAfterInteraction() {
+        if (state === 'playing' && backgroundMusic) {
+            backgroundMusic.play();
+        }
+    }
+
+	function startBackgroundMusic() {
+        backgroundMusic?.play();
+    }
+
+	function stopBackgroundMusic() {
+        backgroundMusic?.pause();
+    }
+
+	function handleAudioLoaded() {
+        musicLoaded = true;
+        if (state === 'playing') {
+            startBackgroundMusic();
+        }
+    }
+
+$: {
+        if (state === 'playing') {
+            if (!timerId) startGameTimer();
+            if (time === 0) gameLost();
+            if (maxMatches === matches.length) gameWon();
+            if (backgroundMusic && musicLoaded && backgroundMusic.paused) {
+                startBackgroundMusic();
+            }
+        } else {
+            stopBackgroundMusic();
+        }
+    }
+
+	onMount(() => {
+        backgroundMusic = new Audio('./backgroundMusic.mp3');
+        backgroundMusic.addEventListener('loadeddata', handleAudioLoaded);
+    });
 
 	$: selected.length === 2 && matchCards()
 	$: maxMatches === matches.length && gameWon()
 	$: time === 0 && gameLost()
+
 </script>
 
-<svelte:window on:keydown={pauseGame} />
-<h1 class="text-3xl text-center mt-8">Memory Game</h1>
+<audio loop preload="auto" style="display: none;">
+    <source src="./backgroundMusic.mp3" type="audio/mpeg">
+</audio>
+
+<svelte:window on:keydown={pauseGame} on:click={playAudioAfterInteraction} />
+<h1 class="text-3xl text-center mt-8">Gotta Flip'em All!</h1>
 
 {#if state === 'start'}
 <button
@@ -104,11 +147,12 @@ on:click={() => (state = 'playing')}>Start</button
 {/if}
 
 {#if state === 'paused'}
-<h1 class="text-3xl text-center mt-8">Game Paused</h1>
+<h1 class="text-3xl text-center mt-8">Break Time, not cheating!</h1>
 {/if}
 
 <!-- Playing state -->
 {#if state === 'playing'}
+<h2 class="text-2xl text-center font-bold text-amber-600">Hurry! I'm starving!</h2>
  	<!-- Timer -->
 	<div class="w-16 mx-auto border-4 border-pink-500 mt-4">
         <h1 class="timer text-3xl text-center p-2 text-slate-800" class:pulse={time <= 10}>
@@ -146,13 +190,13 @@ on:click={() => (state = 'playing')}>Start</button
 
 <!-- Lost state -->
 {#if state == 'lost'}
-    <h1 class="text-3xl text-center mt-8">Game Over! 🥺</h1>
+    <h1 class="text-3xl text-center mt-8">Game Over! No dinner for you! 🥺</h1>
     <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'playing')}>Play again</button>
 {/if}
 
 <!-- Won state -->
 {#if state == 'won'}
-    <h1 class="text-3xl text-center mt-8">Victory is yours! You've won! 🥳</h1>
+    <h1 class="text-3xl text-center mt-8">Winner, winner, chicken dinner! 🥳 🍗</h1>
     <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'playing')}>Play again</button>
 {/if}
 
