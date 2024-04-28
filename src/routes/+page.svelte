@@ -13,6 +13,7 @@
 	let timerId: any | null = null
 	let time = 60
 	let backgroundMusic : HTMLAudioElement | null = null
+	let matchSound: HTMLAudioElement | null = null;
 	let musicLoaded = false;
 
 	function createGrid() {
@@ -31,6 +32,7 @@
 		return array.sort(() => Math.random() - 0.5)
 	}
 
+
 	function startGameTimer() {
 		function countdown() {
 			state !== 'paused' && (time -= 1)
@@ -42,12 +44,17 @@
 		selected = selected.concat(cardIndex)
 	}
 
+	function playMatchSound() {
+        matchSound?.play();
+    }
+
 	function matchCards() {
 		// array destructuring can have any name for the values
 		const [first, second] = selected
 
 		if (grid[first] === grid[second]) {
 			matches = matches.concat(grid[first])
+			playMatchSound()
 		}
 
 		// clear selected
@@ -122,8 +129,10 @@ $: {
     }
 
 	onMount(() => {
-        backgroundMusic = new Audio('./backgroundMusic.mp3');
-        backgroundMusic.addEventListener('loadeddata', handleAudioLoaded);
+        backgroundMusic = new Audio('./backgroundMusic.mp3')
+		matchSound = new Audio('./matchSound.mp3');
+		backgroundMusic.volume = 0.5
+        musicLoaded = true;
     });
 
 	$: selected.length === 2 && matchCards()
