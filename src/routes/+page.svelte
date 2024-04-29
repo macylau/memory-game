@@ -15,6 +15,8 @@
 	let backgroundMusic : HTMLAudioElement | null = null
 	let matchSound: HTMLAudioElement | null = null;
 	let musicLoaded = false;
+	let difficulty: 'easy' | 'medium' | 'difficult' = 'easy';
+	
 
 	function createGrid() {
 		let cards = new Set<string>()
@@ -32,6 +34,24 @@
 		return array.sort(() => Math.random() - 0.5)
 	}
 
+	
+
+	function startGame(initialTime: number) {
+        state = 'playing';
+        grid = createGrid();
+        maxMatches = grid.length / 2;
+		resetGame();
+    state = 'playing';
+    if (difficulty === 'easy') {
+        time = 60;
+    } else if (difficulty === 'medium') {
+        time = 45;
+    } else if (difficulty === 'difficult') {
+        time = 30;
+    }
+    startGameTimer();
+    }
+  
 
 	function startGameTimer() {
 		function countdown() {
@@ -108,13 +128,6 @@
         backgroundMusic?.pause();
     }
 
-	function handleAudioLoaded() {
-        musicLoaded = true;
-        if (state === 'playing') {
-            startBackgroundMusic();
-        }
-    }
-
 $: {
         if (state === 'playing') {
             if (!timerId) startGameTimer();
@@ -146,14 +159,24 @@ $: {
 </audio>
 
 <svelte:window on:keydown={pauseGame} on:click={playAudioAfterInteraction} />
-<h1 class="text-3xl text-center mt-8">Gotta Flip'em All!</h1>
+<h1 class="text-3xl text-center mt-8 text-amber-600">Gotta Flip'em All!</h1>
 
 {#if state === 'start'}
-<button
-class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary flex justify-center mx-auto my-8 font-bold"
-on:click={() => (state = 'playing')}>Start</button
->
+    <h3 class="text-2xl text-center mt-8">Choose Difficulty:</h3>
+    <div class="flex justify-center gap-4 mt-6">
+        <button 
+            class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary font-bold"
+            on:click={() => { difficulty = 'easy'; startGame(); }}>Easy</button>
+        <button 
+            class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary font-bold"
+            on:click={() => { difficulty = 'medium'; startGame(); }}>Medium</button>
+        <button 
+            class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary font-bold"
+            on:click={() => { difficulty = 'difficult'; startGame(); }}>Difficult</button>
+    </div>
 {/if}
+
+
 
 {#if state === 'paused'}
 <h1 class="text-3xl text-center mt-8">Break Time, not cheating!</h1>
@@ -161,9 +184,9 @@ on:click={() => (state = 'playing')}>Start</button
 
 <!-- Playing state -->
 {#if state === 'playing'}
-<h2 class="text-2xl text-center font-bold text-amber-600">Hurry! I'm starving!</h2>
+<h2 class="text-xl text-center font-bold">Hurry! I'm starving!</h2>
  	<!-- Timer -->
-	<div class="w-16 mx-auto border-4 border-pink-500 mt-4">
+	<div class="w-16 mx-auto border-4 border-pink-500 mt-2">
         <h1 class="timer text-3xl text-center p-2 text-slate-800" class:pulse={time <= 10}>
             {time}
         </h1>
@@ -175,7 +198,7 @@ on:click={() => (state = 'playing')}>Start</button
         {/each}
     </div>
 
-	<div class="cards max-w-md mx-auto grid grid-cols-5 gap-4 justify-items-center overflow-hidden md:max-w-3xl p-8">
+	<div class="cards max-w-md mx-auto grid grid-cols-5 gap-4 justify-items-center overflow-hidden md:max-w-3xl p-6">
 		{#each grid as card, cardIndex}
 			{@const isSelected = selected.includes(cardIndex)}
 			{@const isSelectedOrMatch =
@@ -200,19 +223,19 @@ on:click={() => (state = 'playing')}>Start</button
 <!-- Lost state -->
 {#if state == 'lost'}
     <h1 class="text-3xl text-center mt-8">Game Over! No dinner for you! 🥺</h1>
-    <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'playing')}>Play again</button>
+    <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'start')}>Play again</button>
 {/if}
 
 <!-- Won state -->
 {#if state == 'won'}
     <h1 class="text-3xl text-center mt-8">Winner, winner, chicken dinner! 🥳 🍗</h1>
-    <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'playing')}>Play again</button>
+    <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'start')}>Play again</button>
 {/if}
 
 <style>
 	.card {
-		height: 128px;
-		width: 128px;
+		height: 120px;
+		width: 120px;
 		border-radius: 0.5rem;
 		box-shadow: 0px 6px 10px rgba(0, 0, 255, .2);
         font-size: 60px;
