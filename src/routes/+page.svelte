@@ -165,13 +165,13 @@ $: {
     <h3 class="text-2xl text-center mt-8">Choose Difficulty:</h3>
     <div class="flex justify-center gap-4 mt-6">
         <button 
-            class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary font-bold"
+            class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary duration-300 font-bold"
             on:click={() => { difficulty = 'easy'; startGame(); }}>Easy</button>
         <button 
-            class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary font-bold"
+            class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary duration-300 font-bold"
             on:click={() => { difficulty = 'medium'; startGame(); }}>Medium</button>
         <button 
-            class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary font-bold"
+            class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary duration-300 font-bold"
             on:click={() => { difficulty = 'difficult'; startGame(); }}>Difficult</button>
     </div>
 {/if}
@@ -223,13 +223,13 @@ $: {
 <!-- Lost state -->
 {#if state == 'lost'}
     <h1 class="text-3xl text-center mt-8">Game Over! No dinner for you! 🥺</h1>
-    <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'start')}>Play again</button>
+    <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary duration-300 flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'start')}>Play again</button>
 {/if}
 
 <!-- Won state -->
 {#if state == 'won'}
     <h1 class="text-3xl text-center mt-8">Winner, winner, chicken dinner! 🥳 🍗</h1>
-    <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'start')}>Play again</button>
+    <button class="btn btn-xl variant-outline-primary border-2 border-pink-500 hover:variant-filled-primary duration-300 flex justify-center mx-auto my-8 font-bold" on:click={() => (state = 'start')}>Play again</button>
 {/if}
 
 <style>
@@ -243,7 +243,7 @@ $: {
 		transform-style: preserve-3d;
 
 		&.selected {
-			border: 4px solid var(--border);
+			border: 4px solid #ff73de;
 		}
 
 		&.flip {

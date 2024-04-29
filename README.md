@@ -21,6 +21,7 @@ I love playing memory games, some of them can be addicting too. I'm creating thi
 13. Card flipping animation.
 14. Auto play and loop background music when game starts.
 15. Matching sound effect when 2 cards matched.
+16. Player be able to pause and un-pause the game with "Escape" button.
 
 ### What tool or framework will you use and why?
 I'm Svelte to create this Memory game because I feel most comfortable with Svelte. In addition, I like using Skeleton and Tailwind with it, they make UI design so much easier!
