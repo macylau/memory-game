@@ -179,7 +179,7 @@ $: {
 
 
 {#if state === 'paused'}
-<h1 class="text-3xl text-center mt-8">Break Time, not cheating!</h1>
+<h1 class="text-3xl text-center mt-8">Break Time, no cheating!</h1>
 {/if}
 
 <!-- Playing state -->
